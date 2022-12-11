@@ -1,0 +1,41 @@
+.alphabet {
+    display: flex;
+}
+
+.alphabet p {
+    padding: 15px;
+    margin-right: 15px;
+    background-color: gray;
+    cursor: pointer;
+}
+
+.alphabet p:hover {
+    background-color: lightgrey;
+}
+
+.container_hangman {
+    min-height: 70vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.word {
+    letter-spacing: 10px;
+}
+
+.bad_click {
+    background-color: red !important;
+    cursor: not-allowed !important;
+}
+
+.good_click {
+    background-color: green !important;
+    cursor: default !important;
+}
+
+.game_over {
+    height: 35px;
+    width: 100px;
+    display: none;
+}
