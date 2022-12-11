@@ -20,6 +20,34 @@ var wordsAvailable = [
   "jenesaispas",
 ];
 
+var indexesForLetters = [
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+  "G",
+  "H",
+  "I",
+  "J",
+  "K",
+  "L",
+  "M",
+  "N",
+  "O",
+  "P",
+  "Q",
+  "R",
+  "S",
+  "T",
+  "U",
+  "V",
+  "W",
+  "X",
+  "Y",
+  "Z",
+];
 var letterClicker = document.querySelectorAll(".letter");
 
 var currentWord = "";
@@ -31,16 +59,13 @@ wordToGuess();
 
 Array.from(letterClicker).forEach((letter) => {
   letter.addEventListener("click", (e) => {
-    if (isGameOver()) {
+    if (isGameOver() || ifWin() || letter.classList[0] !== "letter") {
       return;
     }
     if (letter.classList[0] === "letter") {
       isLetterOnWord(letter, letter.classList[1]);
-    } else {
-      return;
     }
-    letter.classList.add("bad_click");
-    letter.classList.remove("letter");
+    addOrRemoveClasslist(letter, "bad");
   });
 });
 
@@ -51,7 +76,7 @@ function wordToGuess() {
       Math.floor(Math.random() * wordsAvailable.length)
     ].toUpperCase();
   const wordSplited = word.split("");
-  //console.log(word);
+  console.log(word);
 
   referenceWord += word.replace(word[0], "$").replace(/.$/, "$");
 
@@ -65,22 +90,27 @@ function wordToGuess() {
 
 //Checks if letter exist on the word
 function isLetterOnWord(wholeLetter, letter) {
-  if (referenceWord.includes(letter)) {
-    if (isGameOver()) {
-      return;
-    }
-
-    const index = getAllIndexes(letter);
-    referenceWord = referenceWord.replaceAll(letter, "$");
-
-    index.forEach((i) => {
-      new String(currentWord).replaceAt(i, letter);
-    });
-
-    wholeLetter.classList.add("good_click");
-    wholeLetter.classList.remove("letter");
-  } else {
+  if (!referenceWord.includes(letter)) {
     changeHangmanDesign();
+    return;
+  }
+
+  if (isGameOver() || ifWin()) {
+    return;
+  }
+
+  const index = getAllIndexes(letter);
+  referenceWord = referenceWord.replaceAll(letter, "$");
+
+  index.forEach((i) => {
+    new String(currentWord).replaceAt(i, letter);
+  });
+
+  addOrRemoveClasslist(wholeLetter, "good");
+
+  if (ifWin()) {
+    document.querySelector(".game_over").style.display = "flex";
+    return;
   }
 }
 
@@ -93,6 +123,7 @@ function getAllIndexes(letter) {
       indexes.push(i);
     }
   }
+
   return indexes;
 }
 
@@ -112,7 +143,6 @@ function changeHangmanDesign() {
   document.querySelector(".hangman").src = design[countFault];
 
   countFault += 1;
-
   if (isGameOver()) {
     document.querySelector(".game_over").style.display = "flex";
     return;
@@ -155,4 +185,42 @@ document.querySelector(".game_over").addEventListener("click", (e) => {
 
   resetLettersClickedAndRestartButton();
   wordToGuess();
+});
+
+//check if we win :D
+function ifWin() {
+  return referenceWord.split("$").length - 1 == referenceWord.length;
+}
+
+//Add / remove classlist to make colors
+function addOrRemoveClasslist(letter, proprety) {
+  if (proprety === "good") {
+    letter.classList.add("good_click");
+    letter.classList.remove("letter");
+  } else if (proprety === "bad") {
+    letter.classList.add("bad_click");
+    letter.classList.remove("letter");
+  }
+}
+
+//This is if we use a pc, the function to check letter works either manually or with a keyboard
+document.addEventListener("keydown", (e) => {
+  const letters = document.querySelectorAll("p");
+  const keyClicked = indexesForLetters.indexOf(e.key.toUpperCase());
+  const thisLetter = letters[keyClicked];
+
+  if (
+    keyClicked < 0 ||
+    isGameOver() ||
+    ifWin() ||
+    thisLetter.classList[0] !== "letter"
+  ) {
+    return;
+  }
+
+  if (thisLetter.classList[0] === "letter") {
+    isLetterOnWord(thisLetter, thisLetter.classList[1]);
+  }
+
+  addOrRemoveClasslist(thisLetter, "bad");
 });
