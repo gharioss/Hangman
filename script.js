@@ -55,6 +55,28 @@ var referenceWord = "";
 
 var countFault = 0;
 
+const myHeaders = new Headers();
+
+const myRequest = new Request(
+  "http://file:///home/idunno/Documents/Projets-Perso/Hangman/words.json",
+  {
+    method: "GET",
+    headers: myHeaders,
+    mode: "cors",
+    cache: "default",
+  }
+);
+
+fetch(myRequest)
+  .then((response) => response.blob())
+  .then((myBlob) => {
+    myImage.src = URL.createObjectURL(myBlob);
+  });
+
+fetch("http://file:///home/idunno/Documents/Projets-Perso/Hangman/words.json")
+  .then((response) => response.json())
+  .then((data) => console.log(data));
+
 wordToGuess();
 
 Array.from(letterClicker).forEach((letter) => {
