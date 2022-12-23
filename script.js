@@ -11,15 +11,6 @@ var design = [
   "./pictures/hangman_logo.png",
 ];
 
-var wordsAvailable = [
-  "fourmis",
-  "tramway",
-  "alternance",
-  "formation",
-  "araignees",
-  "jenesaispas",
-];
-
 var indexesForLetters = [
   "A",
   "B",
@@ -55,28 +46,6 @@ var referenceWord = "";
 
 var countFault = 0;
 
-const myHeaders = new Headers();
-
-const myRequest = new Request(
-  "http://file:///home/idunno/Documents/Projets-Perso/Hangman/words.json",
-  {
-    method: "GET",
-    headers: myHeaders,
-    mode: "cors",
-    cache: "default",
-  }
-);
-
-fetch(myRequest)
-  .then((response) => response.blob())
-  .then((myBlob) => {
-    myImage.src = URL.createObjectURL(myBlob);
-  });
-
-fetch("http://file:///home/idunno/Documents/Projets-Perso/Hangman/words.json")
-  .then((response) => response.json())
-  .then((data) => console.log(data));
-
 wordToGuess();
 
 Array.from(letterClicker).forEach((letter) => {
@@ -92,22 +61,25 @@ Array.from(letterClicker).forEach((letter) => {
 });
 
 //Take one word which will be the one to guess and make it appears with _ _ _ _ but the first and the last
+//We fetch on an API I made
 function wordToGuess() {
-  const word =
-    wordsAvailable[
-      Math.floor(Math.random() * wordsAvailable.length)
-    ].toUpperCase();
-  const wordSplited = word.split("");
-  console.log(word);
+  fetch("https://j-napoli.alwaysdata.net/wordApi/words.json")
+    .then((response) => response.json())
+    .then((data) => {
+      let word = data.words[Math.floor(Math.random() * data.words.length)];
 
-  referenceWord += word.replace(word[0], "$").replace(/.$/, "$");
+      const wordSplited = word.split("");
 
-  currentWord +=
-    wordSplited[0] +
-    "_".repeat(wordSplited.length - 2) +
-    wordSplited[word.length - 1];
+      console.log(word);
+      referenceWord += word.replace(word[0], "$").replace(/.$/, "$");
 
-  makeWordToGuessVisible(currentWord);
+      currentWord +=
+        wordSplited[0] +
+        "_".repeat(wordSplited.length - 2) +
+        wordSplited[word.length - 1];
+
+      makeWordToGuessVisible(currentWord);
+    });
 }
 
 //Checks if letter exist on the word
