@@ -63,7 +63,10 @@ Array.from(letterClicker).forEach((letter) => {
 //Take one word which will be the one to guess and make it appears with _ _ _ _ but the first and the last
 //We fetch on an API I made
 function wordToGuess() {
-  fetch("https://j-napoli.alwaysdata.net/wordApi/words.json")
+  fetch("https://j-napoli.alwaysdata.net/wordApi/words.json", {
+    method: "GET",
+    mode: "cors",
+  })
     .then((response) => response.json())
     .then((data) => {
       let word = data.words[Math.floor(Math.random() * data.words.length)];
